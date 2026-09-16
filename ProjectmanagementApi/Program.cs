@@ -29,4 +29,15 @@ app.MapControllers();
 
 app.MapGraphQL();
 
+app.MapGet("/api/health", async (AppDbContext db) =>
+{
+    var dbOk = await db.Database.CanConnectAsync();
+    return Results.Ok(new
+    {
+        status = "Healthy",
+        database = dbOk ? "SQL Server connected" : "SQL Server UNREACHABLE",
+        checkedAt = DateTime.UtcNow
+    });
+});
+
 app.Run();
