@@ -28,7 +28,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapGraphQL();
-
+app.UseSwaggerUI();
 app.MapGet("/api/health", async (AppDbContext db) =>
 {
     var dbOk = await db.Database.CanConnectAsync();

@@ -2,7 +2,7 @@
 
 public class User
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
@@ -12,10 +12,10 @@ public class User
 
 public class Project
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public int OwnerId { get; set; }
+    public Guid OwnerId { get; set; }
     public string Status { get; set; } = "Active";
     public DateTime? StartDate { get; set; }
     public DateTime? TargetEndDate { get; set; }
@@ -25,8 +25,8 @@ public class Project
 
 public class ProjectMember
 {
-    public int ProjectId { get; set; }
-    public int UserId { get; set; }
+    public Guid ProjectId { get; set; }
+    public Guid UserId { get; set; }
     public string Role { get; set; } = "Member";
     public DateTime JoinedAt { get; set; }
     public Project Project { get; set; } = null!;
@@ -35,9 +35,9 @@ public class ProjectMember
 
 public class TaskItem
 {
-    public int Id { get; set; }
-    public int ProjectId { get; set; }
-    public int? AssigneeId { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid ProjectId { get; set; }
+    public Guid? AssigneeId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string Status { get; set; } = "Todo";
@@ -51,9 +51,9 @@ public class TaskItem
 
 public class TaskComment
 {
-    public int Id { get; set; }
-    public int TaskId { get; set; }
-    public int AuthorId { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TaskId { get; set; }
+    public Guid AuthorId { get; set; }
     public string Body { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public TaskItem Task { get; set; } = null!;

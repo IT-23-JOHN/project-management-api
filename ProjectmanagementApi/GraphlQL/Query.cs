@@ -11,13 +11,13 @@ public class Query
             .Select(p => new ProjectDto(p.Id, p.Name, p.Status, p.Owner.FullName, p.StartDate, p.TargetEndDate))
             .ToListAsync();
 
-    public async Task<ProjectDto?> GetProjectAsync(int id, AppDbContext db) =>
+    public async Task<ProjectDto?> GetProjectAsync(Guid id, AppDbContext db) =>
         await db.Projects
             .Where(p => p.Id == id)
             .Select(p => new ProjectDto(p.Id, p.Name, p.Status, p.Owner.FullName, p.StartDate, p.TargetEndDate))
             .FirstOrDefaultAsync();
 
-    public async Task<List<TaskDto>> GetTasksAsync(int projectId, AppDbContext db) =>
+    public async Task<List<TaskDto>> GetTasksAsync(Guid projectId, AppDbContext db) =>
         await db.Tasks
             .Where(t => t.ProjectId == projectId)
             .Select(t => new TaskDto(t.Id, t.ProjectId, t.Title, t.Status, t.Priority,

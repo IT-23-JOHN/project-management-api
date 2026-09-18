@@ -30,9 +30,9 @@ public class ProjectsController : ControllerBase
         return Ok(projects);
     }
 
-    // GET api/projects/1
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ProjectDto>> Get(int id)
+    // GET api/projects/{id}
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ProjectDto>> Get(Guid id)
     {
         var project = await _db.Projects
             .Where(p => p.Id == id)
@@ -42,9 +42,9 @@ public class ProjectsController : ControllerBase
         return project is null ? NotFound() : Ok(project);
     }
 
-    // GET api/projects/1/dashboard  →  Dapper + stored procedure
-    [HttpGet("{id}/dashboard")]
-    public async Task<IActionResult> Dashboard(int id)
+    // GET api/projects/{id}/dashboard  →  Dapper + stored procedure
+    [HttpGet("{id:guid}/dashboard")]
+    public async Task<IActionResult> Dashboard(Guid id)
     {
         var sql = "EXEC sp_GetProjectDashboard @ProjectId";
 
@@ -84,9 +84,9 @@ public class ProjectsController : ControllerBase
         return Created($"/api/projects/{project.Id}", project.Id);
     }
 
-    // PUT api/projects/1/status
-    [HttpPut("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(int id, UpdateStatusRequest request)
+    // PUT api/projects/{id}/status
+    [HttpPut("{id:guid}/status")]
+    public async Task<IActionResult> UpdateStatus(Guid id, UpdateStatusRequest request)
     {
         var project = await _db.Projects.FindAsync(id);
         if (project is null) return NotFound();
@@ -95,9 +95,9 @@ public class ProjectsController : ControllerBase
         return NoContent();
     }
 
-    // DELETE api/projects/1
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    // DELETE api/projects/{id}
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
     {
         var project = await _db.Projects.FindAsync(id);
         if (project is null) return NotFound();
@@ -107,7 +107,7 @@ public class ProjectsController : ControllerBase
     }
 }
 
-public record ProjectDto(int Id, string Name, string Status, string Owner, DateTime? StartDate, DateTime? TargetEndDate);
-public record CreateProjectRequest(string Name, string? Description, int OwnerId, DateTime? StartDate, DateTime? TargetEndDate);
+public record ProjectDto(Guid Id, string Name, string Status, string Owner, DateTime? StartDate, DateTime? TargetEndDate);
+public record CreateProjectRequest(string Name, string? Description, Guid OwnerId, DateTime? StartDate, DateTime? TargetEndDate);
 public record UpdateStatusRequest(string Status);
-public record ProjectDashboardDto(int Id, string Name, string Status, int TotalTasks, int DoneTasks, int InProgressTasks, decimal? CompletionPercent);
+public record ProjectDashboardDto(Guid Id, string Name, string Status, int TotalTasks, int DoneTasks, int InProgressTasks, decimal? CompletionPercent);

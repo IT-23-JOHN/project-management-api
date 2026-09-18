@@ -22,9 +22,9 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
-    // GET api/users/1
-    [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto>> Get(int id)
+    // GET api/users/{id}
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<UserDto>> Get(Guid id)
     {
         var user = await _db.Users
             .Where(u => u.Id == id)
@@ -35,4 +35,4 @@ public class UsersController : ControllerBase
     }
 }
 
-public record UserDto(int Id, string FullName, string Email, string Role, DateTime CreatedAt);
+public record UserDto(Guid Id, string FullName, string Email, string Role, DateTime CreatedAt);

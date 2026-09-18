@@ -12,9 +12,9 @@ public class TasksController : ControllerBase
     private readonly AppDbContext _db;
     public TasksController(AppDbContext db) => _db = db;
 
-    // GET api/tasks?projectId=1
+    // GET api/tasks?projectId={guid}
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TaskDto>>> GetByProject([FromQuery] int projectId)
+    public async Task<ActionResult<IEnumerable<TaskDto>>> GetByProject([FromQuery] Guid projectId)
     {
         var tasks = await _db.Tasks
             .Where(t => t.ProjectId == projectId)
@@ -47,9 +47,9 @@ public class TasksController : ControllerBase
         return Created($"/api/tasks/{task.Id}", task.Id);
     }
 
-    // PUT api/tasks/1/status
-    [HttpPut("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(int id, UpdateStatusRequest request)
+    // PUT api/tasks/{id}/status
+    [HttpPut("{id:guid}/status")]
+    public async Task<IActionResult> UpdateStatus(Guid id, UpdateStatusRequest request)
     {
         var task = await _db.Tasks.FindAsync(id);
         if (task is null) return NotFound();
@@ -58,9 +58,9 @@ public class TasksController : ControllerBase
         return NoContent();
     }
 
-    // PUT api/tasks/1/assign
-    [HttpPut("{id}/assign")]
-    public async Task<IActionResult> Assign(int id, AssignTaskRequest request)
+    // PUT api/tasks/{id}/assign
+    [HttpPut("{id:guid}/assign")]
+    public async Task<IActionResult> Assign(Guid id, AssignTaskRequest request)
     {
         var task = await _db.Tasks.FindAsync(id);
         if (task is null) return NotFound();
@@ -69,9 +69,9 @@ public class TasksController : ControllerBase
         return NoContent();
     }
 
-    // DELETE api/tasks/1
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    // DELETE api/tasks/{id}
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
     {
         var task = await _db.Tasks.FindAsync(id);
         if (task is null) return NotFound();
@@ -81,8 +81,8 @@ public class TasksController : ControllerBase
     }
 }
 
-public record TaskDto(int Id, int ProjectId, string Title, string Status, string Priority,
+public record TaskDto(Guid Id, Guid ProjectId, string Title, string Status, string Priority,
                       DateTime? DueDate, decimal? EstimatedHours, string? Assignee);
-public record CreateTaskRequest(int ProjectId, string Title, string? Description, int? AssigneeId,
+public record CreateTaskRequest(Guid ProjectId, string Title, string? Description, Guid? AssigneeId,
                                 string? Priority, DateTime? DueDate, decimal? EstimatedHours);
-public record AssignTaskRequest(int? AssigneeId);
+public record AssignTaskRequest(Guid? AssigneeId);

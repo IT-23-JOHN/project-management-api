@@ -1,0 +1,458 @@
+{
+  "info": {
+    "_postman_id": "76a70c2c-d2db-479a-b856-f8f902875376",
+    "name": "ProjectmanagementApi",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "37181487",
+    "_collection_link": "https://go.postman.co/collection/37181487-76a70c2c-d2db-479a-b856-f8f902875376?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "00 Health",
+      "item": [
+        {
+          "name": "Health check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    pm.response.to.be.json;\r\n});\r\n\r\npm.test(\"Database is connected\", function () {\r\n    pm.expect(pm.response.json().database).to.eql(\"SQL Server connected\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01 Projects",
+      "item": [
+        {
+          "name": "{{baseUrl}}/api/Projects",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response is a JSON array\", function () {\r\n    pm.expect(pm.response.json()).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Alice owns a project\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json.some(p => p.owner === \"Alice Mwangi\")).to.be.true;\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/plain"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Projects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "{{baseUrl}}/api/Projects/1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Project 1 is Website Redesign\", function () {\r\n    pm.expect(pm.response.json().name).to.eql(\"Website Redesign\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/plain"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Projects/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Projects",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "{{baseUrl}}/api/Projects",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Created successfully\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r\n});\r\n\r\nconst body = pm.response.json();\r\nconst newId = (typeof body === \"number\") ? body : body.id;\r\n\r\npm.test(\"New project id captured\", function () {\r\n    pm.expect(newId).to.be.a(\"number\");\r\n});\r\n\r\npm.collectionVariables.set(\"tempProjectId\", newId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/plain"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Postman Temp Project\",\r\n  \"status\": \"Active\",\r\n  \"ownerId\": 1,\r\n  \"startDate\": \"2026-01-05\",\r\n  \"targetEndDate\": \"2026-05-01\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Projects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "{{baseUrl}}/api/Projects/{{tempProjectId}}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Delete succeeded\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/plain"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Projects/{{tempProjectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Projects",
+                "{{tempProjectId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 Tasks",
+      "item": [
+        {
+          "name": "List tasks for project 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r\n  pm.test(\"Returns 3 seed tasks\", () => pm.expect(pm.response.json().length).to.eql(3));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks?projectId=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Tasks"
+              ],
+              "query": [
+                {
+                  "key": "projectId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create temp task",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Created\", () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));\r\n  const body = pm.response.json();\r\n  const newId = (typeof body === \"number\") ? body : body.id;\r\n  pm.collectionVariables.set(\"tempTaskId\", newId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "  {\r\n    \"title\": \"Postman Temp Task\",\r\n    \"projectId\": 1,\r\n    \"status\": \"Pending\",\r\n    \"priority\": \"Medium\",\r\n    \"dueDate\": \"2026-12-31\",\r\n    \"estimatedHours\": 4,\r\n    \"assigneeId\": 1\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Tasks"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete temp tasks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Deleted\", () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks/{{tempTaskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Tasks",
+                "{{tempTaskId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 Users",
+      "item": [
+        {
+          "name": "New Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r\n  pm.test(\"Returns 3 users\", () => pm.expect(pm.response.json().length).to.eql(3));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/Users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Users"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 Reports",
+      "item": [
+        {
+          "name": "New Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r\npm.test(\"Completion percent is 33.33\", () =>\r\n    pm.expect(pm.response.json().completionPercent).to.eql(33.33));\r\npm.test(\"Total tasks is 3\", () =>\r\n    pm.expect(pm.response.json().totalTasks).to.eql(3));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/1/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "1",
+                "dashboard"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 GraphQL",
+      "item": [
+        {
+          "name": "New Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r\npm.test(\"GraphQL data returned\", () => {\r\n    const json = pm.response.json();\r\n    pm.expect(json.data.projects).to.be.an(\"array\").that.is.not.empty;\r\n    pm.expect(json.data.tasks).to.be.an(\"array\");\r\n});\r\npm.test(\"No GraphQL errors\", () =>\r\n    pm.expect(pm.response.json().errors).to.be.undefined);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "{\r\n  projects { id name owner status }\r\n  tasks(projectId: 1) { title status }\r\n}"
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "New Request",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "  pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r\n  pm.test(\"User is Alice\", () => pm.expect(pm.response.json().fullName).to.include(\"Alice\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/Users/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "Users",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "/"
+    },
+    {
+      "key": "tempProjectId",
+      "value": ""
+    },
+    {
+      "key": "tempTaskId",
+      "value": ""
+    }
+  ]
+}
