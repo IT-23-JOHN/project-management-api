@@ -13,6 +13,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddGraphQLServer()
     .AddQueryType<ProjectmanagementApi.GraphQL.Query>();
 
+builder.Services.AddCors(o => o.AddPolicy("frontend", p =>
+    p.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod()));
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
