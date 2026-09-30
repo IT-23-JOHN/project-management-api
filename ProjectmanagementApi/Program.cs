@@ -14,7 +14,7 @@ builder.Services.AddGraphQLServer()
     .AddQueryType<ProjectmanagementApi.GraphQL.Query>();
 
 builder.Services.AddCors(o => o.AddPolicy("frontend", p =>
-    p.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod()));
+    p.WithOrigins("http://localhost:5173", "http://localhost:5174").AllowAnyHeader().AllowAnyMethod()));
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -23,7 +23,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseCors("frontend");
 
 app.UseAuthorization();
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 type Project = { id: string; name: string; status: string; owner: string };
-const API = "https://localhost:7034";
+const API = "http://localhost:5241";
 
 export default function App() {
   const [projects, setProjects] = useState<Project[]>([]);
