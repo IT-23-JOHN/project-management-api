@@ -12,13 +12,20 @@ public class AppDbContext : DbContext
     public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
     public DbSet<TaskComment> TaskComments => Set<TaskComment>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<OtpCode> OtpCodes => Set<OtpCode>();
+    public DbSet<UserSession> UserSessions => Set<UserSession>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
+        // Atomic, gap-tolerant counter for Project.SeqNo (replaces the old MAX(SeqNo)+1 in code).
+        b.HasSequence<int>("ProjectSeqNo");
+
         b.Entity<User>(e =>
         {
             e.ToTable("Users");
             e.HasIndex(x => x.Email).IsUnique();
+            e.Property(x => x.AuthCodeLast4).HasMaxLength(4);
         });
 
         b.Entity<Project>(e =>
@@ -26,8 +33,36 @@ public class AppDbContext : DbContext
             e.ToTable("Projects");
             e.Property(x => x.StartDate).HasColumnType("date");
             e.Property(x => x.TargetEndDate).HasColumnType("date");
+            e.Property(x => x.SeqNo).HasDefaultValueSql("NEXT VALUE FOR dbo.ProjectSeqNo");
+            e.HasIndex(x => x.SeqNo).IsUnique();
             e.HasOne(x => x.Owner).WithMany()
              .HasForeignKey(x => x.OwnerId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        b.Entity<AuditLog>(e =>
+        {
+            e.ToTable("AuditLogs");
+        });
+
+        b.Entity<OtpCode>(e =>
+        {
+            e.ToTable("OtpCodes");
+            e.Property(x => x.Destination).HasMaxLength(256);
+            e.Property(x => x.CodeHash).HasMaxLength(64);
+            e.Property(x => x.Purpose).HasMaxLength(32);
+            e.HasIndex(x => new { x.Destination, x.CreatedAt });
+        });
+
+        b.Entity<UserSession>(e =>
+        {
+            e.ToTable("UserSessions");
+            e.Property(x => x.TokenHash).HasMaxLength(64);
+            e.Property(x => x.ProjectRole).HasMaxLength(50);
+            e.Property(x => x.UserAgent).HasMaxLength(200);
+            e.HasIndex(x => x.TokenHash).IsUnique();
+            e.HasIndex(x => x.UserId);
+            e.HasIndex(x => x.ExpiresAt);
+            e.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
         });
 
         b.Entity<ProjectMember>(e =>
